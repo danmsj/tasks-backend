@@ -37,10 +37,12 @@ pipeline {
 			steps{
 				git branch: 'main', url: 'https://github.com/danmsj/TesteFuncional'
 				bat 'mvn clean package -DskipTests=true'
-
     }
 }
-    post {
+    
+}
+
+post {
         success {
             echo 'Pipeline executado com sucesso!'
         }
