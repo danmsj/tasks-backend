@@ -30,7 +30,7 @@ pipeline {
 			steps{
 				git branch: 'master', url: 'https://github.com/danmsj/tasks-frontend'
 				bat 'mvn clean package'
-				deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks-frontend', war: 'target/tasks-frontend.war'
+				deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks-frontend', war: 'target/tasks.war'
 			}
 		}
 
