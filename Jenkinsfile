@@ -1,26 +1,49 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage('Build Backend'){
-            steps{
+
+    stages {
+
+        stage('Build Backend') {
+            steps {
                 bat 'mvn clean package -DskipTests=true'
             }
         }
-        stage('Uni Testes'){
-			steps{
-				bat 'mvn test'
-			}
-			}
-		stage('Sonar Analysis'){
-			environment{
-				scannerHome = tool 'SONAR_SCANNER'
-			}
-			steps{
-				withSonarQubeEnv('SONAR_LOCAL'){
-					bat '${scannerHome}/bin/sonar-scanner.bat -e -Dsonar.projectKey=DeployBack -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_cf527c0b7d83971c5dd608046206e31275ef8944 -Dsonar.java.binaries=target'
-			}
-			}
-		}
+
+        stage('Uni Testes') {
+            steps {
+                bat 'mvn test'
+            }
         }
-   
+
+        stage('Sonar Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SONAR_SCANNER'
+
+                    withSonarQubeEnv('SONAR_LOCAL') {
+                        withEnv(["SCANNER_HOME=${scannerHome}"]) {
+                            bat '''
+                                @echo off
+                                call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                                -Dsonar.projectKey=DeployBack ^
+                                -Dsonar.projectName=DeployBack ^
+                                -Dsonar.sources=src/main/java ^
+                                -Dsonar.java.binaries=target/classes
+                            '''
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    post {
+        success {
+            echo 'Pipeline executado com sucesso!'
+        }
+
+        failure {
+            echo 'Pipeline apresentou falha. Verifique o console do Jenkins.'
+        }
+    }
+}
