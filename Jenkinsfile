@@ -16,20 +16,23 @@ pipeline {
         }
 
         stage('Sonar Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool 'SONAR_SCANNER'
+    steps {
+        script {
+            def scannerHome = tool 'SONAR_SCANNER'
 
-                    withSonarQubeEnv('SONAR_LOCAL') {
-                        withEnv(["SCANNER_HOME=${scannerHome}"]) {
-                            bat '''
-                                @echo off
-                                call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
-                                -Dsonar.projectKey=DeployBack ^
-                                -Dsonar.projectName=DeployBack ^
-                                -Dsonar.sources=src/main/java ^
-                                -Dsonar.java.binaries=target/classes
-                            '''
+            withSonarQubeEnv(
+                installationName: 'SONAR_LOCAL',
+                credentialsId: 'sonarqube-token'
+            ) {
+                withEnv(["SCANNER_HOME=${scannerHome}"]) {
+                    bat '''
+                        @echo off
+                        call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                        -Dsonar.projectKey=DeployBack ^
+                        -Dsonar.projectName=DeployBack ^
+                        -Dsonar.sources=src/main/java ^
+                        -Dsonar.java.binaries=target/classes
+                        '''
                         }
                     }
                 }
