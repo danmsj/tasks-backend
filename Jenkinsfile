@@ -33,6 +33,10 @@ pipeline {
 				deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks-frontend', war: 'target/tasks.war'
 			}
 		}
+		stage('Funcional Test'){
+			steps{
+				git branch: 'main', url: 'https://github.com/danmsj/TesteFuncional'
+				bat 'mvn clean package -DskipTests=true'
 
     }
 
