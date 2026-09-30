@@ -28,7 +28,7 @@ pipeline {
 		}
 		stage('Deploy Frontend'){
 			steps{
-				git branch: 'main', url: 'https://github.com/danmsj/tasks-frontend'
+				git branch: 'master', url: 'https://github.com/danmsj/tasks-frontend'
 				bat 'mvn clean package'
 				deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks-frontend', war: 'target/tasks-frontend.war'
 			}
