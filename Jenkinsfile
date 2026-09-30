@@ -39,7 +39,7 @@ pipeline {
 				bat 'mvn clean package -DskipTests=true'
 
     }
-
+}
     post {
         success {
             echo 'Pipeline executado com sucesso!'
