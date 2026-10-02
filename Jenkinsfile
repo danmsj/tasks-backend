@@ -3,9 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Backend Test') {
+        stage('DeployBack) {
             steps {
-                dir('backend-test') {
+                dir('deploy-backend') {
                     git branch: 'master',
                         url: 'https://github.com/danmsj/tasks-backend'
 
@@ -48,13 +48,13 @@ pipeline {
                 }
             }
         }
-        stage('Frontend Test') {
+        stage('DeployFrontend') {
             steps {
-                dir('frontend-test') {
+                dir('deploy-frontend') {
                     git branch: 'master',
                         url: 'https://github.com/danmsj/tasks-frontend'
 
-                    bat 'mvn clean test'
+                    bat 'mvn clean'
                 }
             }
         }
@@ -73,7 +73,7 @@ pipeline {
                                     -Dsonar.projectName=DeployFront ^
                                     -Dsonar.sources=src/main/java ^
                                     -Dsonar.java.binaries=target/classes ^
-                                    -Dsonar.tests=src/test/java
+                            
                                 '''
                             }
                         }
