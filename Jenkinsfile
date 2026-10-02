@@ -13,7 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('Sonar Analysis') {
+        stage('Sonar Analysis Backend') {
             steps {
                 dir('backend-test') {
                     script {
@@ -37,7 +37,7 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
+        stage('Quality Gate Backend') {
             steps {
                     script {
                         def qualityGate = waitForQualityGate()
@@ -58,7 +58,7 @@ pipeline {
                 }
             }
         }
-        stage('Sonar Analysis') {
+        stage('Sonar Analysis Frontend') {
             steps {
                 dir('frontend-test') {
                     script {
@@ -82,7 +82,7 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
+        stage('Quality Gate Frontend') {
             steps {
                     script {
                         def qualityGate = waitForQualityGate()
