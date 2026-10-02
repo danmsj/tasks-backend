@@ -48,10 +48,10 @@ pipeline {
                 }
             }
         }
-        stage('TaskAPITest') {
+        stage('TasksAPITest') {
             steps {
                 dir('task-api-test') {
-                    git branch: 'master',
+                    git branch: 'main',
                         url: 'https://github.com/danmsj/tasksApiTest'
 
                     bat 'mvn clean test'
