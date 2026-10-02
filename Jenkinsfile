@@ -3,78 +3,52 @@ pipeline {
 
     stages {
 
-        stage('Build Backend') {
+        stage('SWAPI Test') {
             steps {
-                bat 'mvn clean package -DskipTests=true'
-            }
-        }
-
-        stage('Uni Testes') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-
-        stage('Deploy Backend') {
-            steps {
-                deploy adapters: [
-                    tomcat9(
-                        alternativeDeploymentContext: '',
-                        credentialsId: 'TomcatLogin',
-                        path: '',
-                        url: 'http://localhost:8001/'
-                    )
-                ],
-                contextPath: 'tasks-backend',
-                war: 'target/tasks-backend.war'
-            }
-        }
-
-        stage('API Test') {
-            steps {
-                dir('api-tests') {
-                    git branch: 'main',
-                        url: 'https://github.com/danmsj/tasksApiTest'
-
-                    bat 'mvn clean test'
-                }
-            }
-        }
-
-        stage('Deploy Frontend') {
-            steps {
-                dir('frontend') {
+                dir('swapi-tests') {
                     git branch: 'master',
-                        url: 'https://github.com/danmsj/tasks-frontend'
-
-                    bat 'mvn clean package'
-
-                    deploy adapters: [
-                        tomcat9(
-                            alternativeDeploymentContext: '',
-                            credentialsId: 'TomcatLogin',
-                            path: '',
-                            url: 'http://localhost:8001/'
-                        )
-                    ],
-                    contextPath: 'tasks-frontend',
-                    war: 'target/tasks.war'
-                }
-            }
-        }
-
-        stage('Funcional Test') {
-            steps {
-                dir('functional-tests') {
-                    git branch: 'main',
-                        url: 'https://github.com/danmsj/TesteFuncional'
+                        url: 'https://github.com/danmsj/tasks-backend'
 
                     bat 'mvn clean test'
                 }
             }
         }
-    }
+        stage('Sonar Analysis') {
+            steps {
+                dir('swapi-tests') {
+                    script {
+                        def scannerHome = tool 'SONAR_SCANNER'
 
+                        withSonarQubeEnv('SONAR_LOCAL') {
+                            withEnv(["SCANNER_HOME=${scannerHome}"]) {
+                                bat '''
+                                    @echo off
+                                    call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                                    -Dsonar.projectKey=DeployBack ^
+                                    -Dsonar.projectName=DeployBack ^
+                                    -Dsonar.sources=src ^
+                                    -Dsonar.java.binaries=target/classes ^
+                                    -Dsonar.tests=src/test/java
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                    script {
+                        def qualityGate = waitForQualityGate()
+
+                        if (qualityGate.status != 'OK') {
+                            error "Quality Gate reprovado: ${qualityGate.status}"
+                        }
+                }
+            }
+        }
+}
     post {
         success {
             echo 'Pipeline executado com sucesso!'
