@@ -48,6 +48,51 @@ pipeline {
                 }
             }
         }
+        stage('Frontend Test') {
+            steps {
+                dir('frontend-test') {
+                    git branch: 'master',
+                        url: 'https://github.com/danmsj/tasks-frontend'
+
+                    bat 'mvn clean test'
+                }
+            }
+        }
+        stage('Sonar Analysis') {
+            steps {
+                dir('frontend-test') {
+                    script {
+                        def scannerHome = tool 'SONAR_SCANNER'
+
+                        withSonarQubeEnv('SONAR_LOCAL') {
+                            withEnv(["SCANNER_HOME=${scannerHome}"]) {
+                                bat '''
+                                    @echo off
+                                    call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
+                                    -Dsonar.projectKey=DeployFront ^
+                                    -Dsonar.projectName=DeployFront ^
+                                    -Dsonar.sources=src/main/java ^
+                                    -Dsonar.java.binaries=target/classes ^
+                                    -Dsonar.tests=src/test/java
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                    script {
+                        def qualityGate = waitForQualityGate()
+
+                        if (qualityGate.status != 'OK') {
+                            error "Quality Gate reprovado: ${qualityGate.status}"
+                        }
+                }
+            }
+        }
 }
     post {
         success {
