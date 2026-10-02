@@ -3,7 +3,7 @@ pipeline {
 
     stages {
 
-        stage('DeployBack) {
+        stage('DeployBack') {
             steps {
                 dir('deploy-backend') {
                     git branch: 'master',
