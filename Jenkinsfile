@@ -71,7 +71,6 @@ pipeline {
                                     call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
                                     -Dsonar.projectKey=DeployBack ^
                                     -Dsonar.projectName=DeployBack ^
-                                    -Dsonar.sources=src/main/java ^
                                     -Dsonar.java.binaries=target/classes ^
                                     -Dsonar.tests=src/test/java
                                 '''
