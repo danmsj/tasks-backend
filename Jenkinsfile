@@ -3,9 +3,9 @@ pipeline {
 
     stages {
 
-        stage('SWAPI Test') {
+        stage('Backend Test') {
             steps {
-                dir('swapi-tests') {
+                dir('backend-test') {
                     git branch: 'master',
                         url: 'https://github.com/danmsj/tasks-backend'
 
@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Sonar Analysis') {
             steps {
-                dir('swapi-tests') {
+                dir('backend-test') {
                     script {
                         def scannerHome = tool 'SONAR_SCANNER'
 
@@ -26,7 +26,7 @@ pipeline {
                                     call "%SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
                                     -Dsonar.projectKey=DeployBack ^
                                     -Dsonar.projectName=DeployBack ^
-                                    -Dsonar.sources=src ^
+                                    -Dsonar.sources=src/main/java ^
                                     -Dsonar.java.binaries=target/classes ^
                                     -Dsonar.tests=src/test/java
                                 '''
